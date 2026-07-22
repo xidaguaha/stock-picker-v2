@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# 敏感配置（含webhook/api_key等）
+config.json
+
+# 数据和缓存（大文件，不进git）
+cache/
+data/
+history/
+agent_data/
+logs/
+trades/
+reports/
+ai_predictions/
+evolution_history/
+performance/
+盘后AI分析/stock_ai_analysis_*.json
+盘后AI分析/stock_ai_analysis_*.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
+*.log
+
+# Parquet 缓存
+*.parquet
+
+# 测试产物
+tests/reports/
+tests/screenshots/
