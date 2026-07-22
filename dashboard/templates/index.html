@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量化选股系统 - 控制台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">📈</span>
+                <span class="logo-text">量化选股</span>
+            </div>
+            <div class="version-badge">v6.10.2</div>
+        </div>
+        <nav class="nav-menu">
+            <a class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+                <span class="nav-icon">📊</span>
+                <span>仪表盘</span>
+            </a>
+            <a class="nav-item" data-page="picks" onclick="switchPage('picks')">
+                <span class="nav-icon">🎯</span>
+                <span>选股结果</span>
+            </a>
+            <a class="nav-item" data-page="backtest" onclick="switchPage('backtest')">
+                <span class="nav-icon">📐</span>
+                <span>回测分析</span>
+            </a>
+            <a class="nav-item" data-page="factors" onclick="switchPage('factors')">
+                <span class="nav-icon">⚖️</span>
+                <span>因子权重</span>
+            </a>
+            <a class="nav-item" data-page="trading" onclick="switchPage('trading')">
+                <span class="nav-icon">💼</span>
+                <span>模拟交易</span>
+            </a>
+            <a class="nav-item" data-page="analysis" onclick="switchPage('analysis')">
+                <span class="nav-icon">🔍</span>
+                <span>个股分析</span>
+            </a>
+            <a class="nav-item" data-page="control" onclick="switchPage('control')">
+                <span class="nav-icon">⚙️</span>
+                <span>系统控制</span>
+            </a>
+            <a class="nav-item" data-page="logs" onclick="switchPage('logs')">
+                <span class="nav-icon">📋</span>
+                <span>日志查看</span>
+            </a>
+            <a class="nav-item" data-page="config" onclick="switchPage('config')">
+                <span class="nav-icon">🔧</span>
+                <span>配置管理</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="scheduler-status" id="schedulerStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">检查中...</span>
+            </div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content" id="mainContent">
+        <!-- 仪表盘 -->
+        <div class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h1>📊 系统仪表盘</h1>
+                <div class="header-actions">
+                    <button class="btn btn-sm" onclick="loadDashboard()">🔄 刷新</button>
+                </div>
+            </div>
+            <div id="dashboardContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 选股结果 -->
+        <div class="page" id="page-picks">
+            <div class="page-header">
+                <h1>🎯 选股结果</h1>
+                <div class="header-actions">
+                    <select id="pickSelector" class="select" onchange="loadPickDetail()"></select>
+                </div>
+            </div>
+            <div id="picksContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 回测分析 -->
+        <div class="page" id="page-backtest">
+            <div class="page-header">
+                <h1>📐 回测分析</h1>
+                <div class="header-actions">
+                    <button class="btn btn-sm" onclick="loadBacktest()">🔄 刷新</button>
+                </div>
+            </div>
+            <div id="backtestContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 因子权重 -->
+        <div class="page" id="page-factors">
+            <div class="page-header">
+                <h1>⚖️ 因子权重</h1>
+                <div class="header-actions">
+                    <button class="btn btn-sm" onclick="loadFactors()">🔄 刷新</button>
+                </div>
+            </div>
+            <div id="factorsContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 模拟交易 -->
+        <div class="page" id="page-trading">
+            <div class="page-header">
+                <h1>💼 模拟交易</h1>
+                <div class="header-actions">
+                    <select id="holdingDaysSelector" class="select" onchange="loadTrading()">
+                        <option value="all">全部持仓周期</option>
+                        <option value="3">持仓 3 天</option>
+                        <option value="5">持仓 5 天</option>
+                        <option value="10">持仓 10 天</option>
+                    </select>
+                    <button class="btn btn-sm" onclick="loadTrading()">🔄 刷新</button>
+                </div>
+            </div>
+            <div id="tradingContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 个股分析 -->
+        <div class="page" id="page-analysis">
+            <div class="page-header">
+                <h1>🔍 个股综合分析</h1>
+                <div class="header-actions">
+                    <button class="btn btn-sm" id="analysisBackBtn" style="display:none" onclick="backToAnalysisList()">← 返回列表</button>
+                    <input type="text" id="analysisStockInput" class="select" placeholder="输入代码/名称筛选或搜索" style="width:200px" onkeyup="filterAnalysisList()">
+                    <button class="btn btn-sm btn-primary" onclick="searchAnalysis()">📊 分析</button>
+                </div>
+            </div>
+            <div id="analysisContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 系统控制 -->
+        <div class="page" id="page-control">
+            <div class="page-header">
+                <h1>⚙️ 系统控制</h1>
+            </div>
+            <div id="controlContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 日志查看 -->
+        <div class="page" id="page-logs">
+            <div class="page-header">
+                <h1>📋 日志查看</h1>
+                <div class="header-actions">
+                    <select id="logTypeSelector" class="select" onchange="loadLogs()">
+                        <option value="errors">错误日志</option>
+                        <option value="runs">运行日志</option>
+                        <option value="scheduler">调度器日志</option>
+                    </select>
+                    <button class="btn btn-sm" onclick="loadLogs()">🔄 刷新</button>
+                </div>
+            </div>
+            <div id="logsContent" class="page-body">
+                <div class="loading">选择日志类型...</div>
+            </div>
+        </div>
+
+        <!-- 配置管理 -->
+        <div class="page" id="page-config">
+            <div class="page-header">
+                <h1>🔧 配置管理</h1>
+                <div class="header-actions">
+                    <button class="btn btn-sm btn-primary" onclick="saveConfig()">💾 保存配置</button>
+                </div>
+            </div>
+            <div id="configContent" class="page-body">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast 通知 -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
